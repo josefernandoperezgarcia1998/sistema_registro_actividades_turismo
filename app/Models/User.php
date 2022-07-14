@@ -20,6 +20,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'estado',
+        'rol',
         'password',
     ];
 
@@ -41,4 +43,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // Un usuario tiene varios servicios
+    public function actividades()
+    {
+        return $this->hasMany('App\Models\Actividad','actividad_id', 'id');
+    }
+
 }
