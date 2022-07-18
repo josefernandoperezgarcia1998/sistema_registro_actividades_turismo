@@ -6,11 +6,7 @@ use App\Http\Controllers\AutenticarController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\UsuarioController;
-use App\Models\Actividad;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +23,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/inicio', [HomeController::class, 'index'])->name('dashboard');
+Route::get('/inicio', [HomeController::class, 'index'])->name('dashboard')->middleware('auth');
 
 
 /* Rutas para iniciar sesión y cerrar sesión */
@@ -36,12 +32,12 @@ Route::post('validar', [AutenticarController::class, 'autenticar'])->name('valid
 Route::get('salir', [AutenticarController::class, 'salida'])->name('salir');
 
 // Ruta recurso para crud users
-Route::resource('areas', AreaController::class)->names('areas');
+Route::resource('areas', AreaController::class)->names('areas')->middleware('admin');
 // Ruta con ajax para obtener la data de area
 Route::get('areas-data', [AreaController::class, 'areasDatatables'])->name('areas-data');
 
 // Ruta recurso para crud users
-Route::resource('users', UsuarioController::class)->names('users');
+Route::resource('users', UsuarioController::class)->names('users')->middleware('admin');
 // Ruta con ajax para obtener toda la data de usuarios con datatables
 Route::get('users-data', [UsuarioController::class, 'usersDatatables'])->name('users-data');
 
@@ -51,12 +47,12 @@ Route::resource('actividades', ActividadController::class)->names('actividades')
 Route::get('actividades-data', [ActividadController::class, 'actividadesDatatables'])->name('actividades-data');
 
 // Ruta recurso para crud users
-Route::resource('catalogo-servicios', ServicioController::class)->names('catalogo-servicios');
+Route::resource('catalogo-servicios', ServicioController::class)->names('catalogo-servicios')->middleware('admin');
 // Ruta con ajax para obtener toda la data de usuarios con datatables
 Route::get('catalogo-servicios-data', [ServicioController::class, 'catServiciosDatatables'])->name('catalogo-servicios-data');
 
 // Ruta para la interfaz de la consulta
-Route::get('acividades/consultas', [ActividadController::class, 'vistaConsulta'])->name('actividades.vista-consulta');
+Route::get('acividades/consultas', [ActividadController::class, 'vistaConsulta'])->name('actividades.vista-consulta')->middleware('admin');
 
 // Ruta para generar las consultas
 Route::post('consulta', [ActividadController::class, 'consulta'])->name('actividades.consulta');
@@ -68,18 +64,6 @@ Route::get('sesiones', function(){
 
     session()->forget('mes');
     session()->forget('ano');
-
-
-});
-
-Route::get('debug', function(){
-
-    $x = Actividad::with('area','user')
-    ->where('usuario_id',Auth::user()->id)
-    ->select('*')
-    ->get();
-
-    dd($x);
 
 
 });
