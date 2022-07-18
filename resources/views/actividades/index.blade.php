@@ -18,7 +18,9 @@
             </div>
             <div>
                 <a href="{{route('actividades.create')}}" class="btn btn-primary btn-sm">Nuevo servicio</a>
-                <a href="{{route('actividades.vista-consulta')}}" class="btn btn-primary btn-sm">Consultar</a>
+                @if (Auth::user()->rol == 'Administrador')
+                    <a href="{{route('actividades.vista-consulta')}}" class="btn btn-primary btn-sm">Consultar</a>
+                @endif
             </div>
         </div>
     </div>
@@ -72,8 +74,8 @@ $(document).ready(function () {
         "columns": [
             {data: 'folio', name: 'folio'},
             {data: 'quien_reporta', name: 'quien_reporta'},
-            {data: 'areaNombre', name: 'areaNombre'},
-            {data: 'usuarioNombre', name: 'usuarioNombre'},
+            {data: 'area', name: 'area.nombre'},
+            {data: 'user', name: 'user.name'},
             {data: 'fecha_inicio', name: 'fecha_inicio'},
             {data: 'btn'},
         ],
