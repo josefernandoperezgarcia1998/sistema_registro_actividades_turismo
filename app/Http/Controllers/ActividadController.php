@@ -9,9 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ActividadesExport;
+use App\Models\Area;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use DataTables;
+use Yajra\DataTables\Facades\DataTables as FacadesDataTables;
 
 class ActividadController extends Controller
 {
@@ -213,32 +216,33 @@ class ActividadController extends Controller
     // Función asíncrona para obtener los datos de la base de datos de los servicios
     public function actividadesDatatables()
     {
-        $data = DB::table('actividades')
-                    ->join('users', 'users.id', '=', 'actividades.usuario_id')
-                    ->join('areas', 'areas.id', '=', 'actividades.usuario_id')
-                    ->select('actividades.*', 'users.name as usuarioNombre', 'areas.nombre as areaNombre')
-                    ->get();
 
-        $data2 = DB::table('actividades')
-                    ->where('usuario_id', '=', Auth::user()->id)
-                    ->join('users', 'users.id', '=', 'actividades.usuario_id')
-                    ->join('areas', 'areas.id', '=', 'actividades.usuario_id')
-                    ->select('actividades.*', 'users.name as usuarioNombre', 'areas.nombre as areaNombre')
-                    ->get();
+        $dataActividad = Actividad::with('area','user')->orderBy('created_at','asc');
+        $dataActividadPrestador = Actividad::with('area','user')->where('usuario_id', Auth::user()->id);
 
         if(Auth::user()->rol=="Administrador"){
-            return datatables()
-                    ->of($data)
-                    ->addColumn('btn', 'actividades.actions')
-                    ->rawColumns(['btn'])
-                    ->toJson();
+            return FacadesDataTables::eloquent($dataActividad)
+                                    ->addColumn('area', function (Actividad $actividad) {
+                                        return $actividad->area->nombre;
+                                    })
+                                    ->addColumn('user', function (Actividad $actividad) {
+                                        return $actividad->user->name;
+                                    })
+                                    ->addColumn('btn', 'actividades.actions')
+                                    ->rawColumns(['btn'])
+                                    ->toJson();
         }
         elseif (Auth::user()->rol=="Prestador"){
-            return datatables()
-                    ->of($data2)
-                    ->addColumn('btn', 'actividades.actions')
-                    ->rawColumns(['btn'])
-                    ->toJson();
+            return FacadesDataTables::eloquent($dataActividadPrestador)
+                                    ->addColumn('area', function (Actividad $actividad) {
+                                        return $actividad->area->nombre;
+                                    })
+                                    ->addColumn('user', function (Actividad $actividad) {
+                                        return $actividad->user->name;
+                                    })
+                                    ->addColumn('btn', 'actividades.actions')
+                                    ->rawColumns(['btn'])
+                                    ->toJson();
         }
     }
 
@@ -246,7 +250,7 @@ class ActividadController extends Controller
     public function vistaConsulta()
     {
         $mensaje = '';
-        $actividades = Actividad::paginate(10);
+        $actividades = Actividad::all();
         $actividadesCount = Actividad::count();
         return view('actividades.consulta', compact('actividades','actividadesCount','mensaje'));
     }
