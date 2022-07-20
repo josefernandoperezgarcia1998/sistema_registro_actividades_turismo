@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Actividad;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -19,28 +20,54 @@ class ActividadesExport implements FromCollection, WithHeadings, WithMapping, Wi
     public function collection()
     {
 
-        // Obteniendo los datos de la sesión
-        $mes = Session::get('mes');
-        $ano = Session::get('ano');
+        if(Auth::user()->rol=="Administrador"){
+            // Obteniendo los datos de la sesión
+            $mes = Session::get('mes');
+            $ano = Session::get('ano');
 
-        // Si el mes y el año está definido y no es null
-        // Entra al if para vacíar los datos de la sesión
-        // Y para retornar la colección
-        if(isset($mes) && isset($ano))
-        {
+            // Si el mes y el año está definido y no es null
+            // Entra al if para vacíar los datos de la sesión
+            // Y para retornar la colección
+            if(isset($mes) && isset($ano))
+            {
 
-            // Eliminando las variables de sesion mes y ano
-            session()->forget('mes');
-            session()->forget('ano');
+                // Eliminando las variables de sesion mes y ano
+                session()->forget('mes');
+                session()->forget('ano');
 
-            return Actividad::whereMonth('fecha_inicio', $mes)
-                            ->whereYear('fecha_inicio', $ano)
-                            ->with('area','user')
-                            ->get();
+                return Actividad::whereMonth('fecha_inicio', $mes)
+                                ->whereYear('fecha_inicio', $ano)
+                                ->with('area','user')
+                                ->get();
 
+            }
+            // Si no entra a la condición retorna esta colección para descargar en el excel
+            return Actividad::all();
+        } elseif (Auth::user()->rol=="Prestador"){
+            // Obteniendo los datos de la sesión
+            $mes = Session::get('mes');
+            $ano = Session::get('ano');
+
+            // Si el mes y el año está definido y no es null
+            // Entra al if para vacíar los datos de la sesión
+            // Y para retornar la colección
+            if(isset($mes) && isset($ano))
+            {
+
+                // Eliminando las variables de sesion mes y ano
+                session()->forget('mes');
+                session()->forget('ano');
+
+                return Actividad::whereMonth('fecha_inicio', $mes)
+                                ->whereYear('fecha_inicio', $ano)
+                                ->with('area','user')
+                                ->where('usuario_id',Auth::user()->id)
+                                ->get();
+
+            }
+            // Si no entra a la condición retorna esta colección para descargar en el excel
+            return Actividad::where('usuario_id',Auth::user()->id)->get();
         }
-        // Si no entra a la condición retorna esta colección para descargar en el excel
-        return Actividad::all();
     }
 
     // Encabezados del excel
