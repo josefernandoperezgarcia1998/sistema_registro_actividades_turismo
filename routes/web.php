@@ -52,7 +52,7 @@ Route::resource('catalogo-servicios', ServicioController::class)->names('catalog
 Route::get('catalogo-servicios-data', [ServicioController::class, 'catServiciosDatatables'])->name('catalogo-servicios-data');
 
 // Ruta para la interfaz de la consulta
-Route::get('acividades/consultas', [ActividadController::class, 'vistaConsulta'])->name('actividades.vista-consulta')->middleware('admin');
+Route::get('acividades/consultas', [ActividadController::class, 'vistaConsulta'])->name('actividades.vista-consulta');
 
 // Ruta para generar las consultas
 Route::post('consulta', [ActividadController::class, 'consulta'])->name('actividades.consulta');
