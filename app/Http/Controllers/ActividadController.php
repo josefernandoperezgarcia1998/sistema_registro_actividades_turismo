@@ -9,11 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ActividadesExport;
-use App\Models\Area;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
-use DataTables;
 use Yajra\DataTables\Facades\DataTables as FacadesDataTables;
 
 class ActividadController extends Controller
@@ -249,33 +245,66 @@ class ActividadController extends Controller
     // Vista para mostrar la consulta
     public function vistaConsulta()
     {
-        $mensaje = '';
-        $actividades = Actividad::all();
-        $actividadesCount = Actividad::count();
-        return view('actividades.consulta', compact('actividades','actividadesCount','mensaje'));
+        if(Auth::user()->rol=="Administrador"){
+            $mensaje = '';
+            $actividades = Actividad::all();
+            $actividadesCount = Actividad::count();
+            
+            return view('actividades.consulta', compact('actividades','actividadesCount','mensaje'));
+        }
+        elseif (Auth::user()->rol=="Prestador"){
+            $mensaje = '';
+            $actividades = Actividad::where('usuario_id', Auth::user()->id)->get();
+            $actividadesCount = Actividad::where('usuario_id', Auth::user()->id)->count();
+            
+            return view('actividades.consulta', compact('actividades','actividadesCount','mensaje'));
+        }
     }
 
     // Función para generar las consultas por mes y año
     public function consulta(Request $request)
     {
-        // Obteniendo mes y año del request
-        $mes = $request->mes;
-        $ano = $request->ano;
+        if(Auth::user()->rol=="Administrador"){
+            // Obteniendo mes y año del request
+            $mes = $request->mes;
+            $ano = $request->ano;
 
-        $actividades = Actividad::whereMonth('fecha_inicio', $mes)
-                                ->whereYear('fecha_inicio', $ano)
-                                ->get();
-
-        $actividadesCount = Actividad::whereMonth('fecha_inicio', $mes)
+            $actividades = Actividad::whereMonth('fecha_inicio', $mes)
                                     ->whereYear('fecha_inicio', $ano)
-                                    ->count();
+                                    ->get();
 
-        // Asignando variables de sesión para el mes y año
-        Session::put('mes', $mes);
-        Session::put('ano', $ano);
+            $actividadesCount = Actividad::whereMonth('fecha_inicio', $mes)
+                                        ->whereYear('fecha_inicio', $ano)
+                                        ->count();
 
-        $mensaje = 'Búsqueda encontrada por mes: '.$mes.' y año: '.$ano;
-        return view('actividades.consulta', compact('actividades','actividadesCount','mensaje'));
+            // Asignando variables de sesión para el mes y año
+            Session::put('mes', $mes);
+            Session::put('ano', $ano);
+
+            $mensaje = 'Búsqueda encontrada por mes: '.$mes.' y año: '.$ano;
+            return view('actividades.consulta', compact('actividades','actividadesCount','mensaje'));
+        } elseif (Auth::user()->rol=="Prestador"){
+            // Obteniendo mes y año del request
+            $mes = $request->mes;
+            $ano = $request->ano;
+
+            $actividades = Actividad::whereMonth('fecha_inicio', $mes)
+                                    ->whereYear('fecha_inicio', $ano)
+                                    ->where('usuario_id', Auth::user()->id)
+                                    ->get();
+
+            $actividadesCount = Actividad::whereMonth('fecha_inicio', $mes)
+                                        ->whereYear('fecha_inicio', $ano)
+                                        ->where('usuario_id', Auth::user()->id)
+                                        ->count();
+
+            // Asignando variables de sesión para el mes y año
+            Session::put('mes', $mes);
+            Session::put('ano', $ano);
+
+            $mensaje = 'Búsqueda encontrada por mes: '.$mes.' y año: '.$ano;
+            return view('actividades.consulta', compact('actividades','actividadesCount','mensaje'));
+        }
     }
 
     // Función para exportar datos de excel
@@ -283,4 +312,5 @@ class ActividadController extends Controller
     {
         return Excel::download(new ActividadesExport, 'actividades.xlsx');
     }
+
 }
