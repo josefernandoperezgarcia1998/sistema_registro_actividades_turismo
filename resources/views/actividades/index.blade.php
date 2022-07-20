@@ -18,9 +18,9 @@
             </div>
             <div>
                 <a href="{{route('actividades.create')}}" class="btn btn-primary btn-sm">Nuevo servicio</a>
-                @if (Auth::user()->rol == 'Administrador')
+                {{-- @if (Auth::user()->rol == 'Administrador') --}}
                     <a href="{{route('actividades.vista-consulta')}}" class="btn btn-primary btn-sm">Consultar</a>
-                @endif
+                {{-- @endif --}}
             </div>
         </div>
     </div>

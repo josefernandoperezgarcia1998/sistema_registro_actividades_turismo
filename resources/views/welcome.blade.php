@@ -4,8 +4,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
-
+        <title>RAUI - Sectur</title>
+        <link rel="icon" href="{{asset('assets/img/favicon_chiapas.png')}}">
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -73,7 +73,7 @@
 
                             <div class="ml-12">
                                 <div class="mt-2 text-gray-600 dark:text-gray-400 text-sm">
-                                    Sistema realizado por el departamento de informática de la Secretaría de Turismo
+                                    Sistema realizado por la Unidad de informática de la Secretaría de Turismo
                                 </div>
                             </div>
                         </div>

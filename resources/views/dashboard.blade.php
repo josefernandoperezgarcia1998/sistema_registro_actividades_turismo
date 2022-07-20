@@ -12,6 +12,7 @@
     <link href="{{asset('assets/dist/css/bootstrap.min.css') }}" rel="stylesheet" />
     <!-- Custom styles for this template -->
     <link href="{{asset('assets/dist/css/css_dashboard/dashboard.css')}}" rel="stylesheet" />
+    <link rel="icon" href="{{asset('assets/img/favicon_chiapas.png')}}">
     <style>
         .bd-placeholder-img {
             font-size: 1.125rem;
