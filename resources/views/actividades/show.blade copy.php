@@ -32,8 +32,12 @@
                     </div>
                     <div class="col-sm">
                         <label for="area" class="form-label">Área de adscripción</label>
-                        <select class="form-control" id="area-search" name="area_id">
-                            <option value="{{ $actividad->area_id }}" selected="selected"> {{ $actividad->area->nombre }}</option>
+                        <select class="form-select" name="area_id" value="{{ old('area_id') }}" required>
+                            <option value="" selected>Seleccionar área</option>
+                            @foreach ($areas as $area)
+                            <option value="{{ $area->id }}" @if ($actividad->area_id === $area->id || old('area_id') ===
+                                $area->id) selected @endif>{{ $area->nombre }}</option>
+                            @endforeach
                         </select>
                         @error('area_id')
                             <div class="text-danger">{{ $message }}</div>
@@ -45,8 +49,12 @@
                     <div class="col-sm">
                         <div class="mb-3 w-50">
                             <label for="area" class="form-label">Tipo de servicio</label>
-                            <select class="form-control" id="servicio-search" name="servicio_id">
-                                <option value="{{ $actividad->servicio_id }}" selected="selected"> {{ $actividad->servicio->nombre }}</option>
+                            <select class="form-select" name="servicio_id" value="{{ old('servicio_id') }}" required>
+                                <option value="" selected>Seleccionar servicio</option>
+                                @foreach ($servicios as $servicio)
+                                <option value="{{ $servicio->id }}" @if ($actividad->servicio_id === $servicio->id || old('servicio_id') ===
+                                    $servicio->id) selected @endif>{{ $servicio->nombre }}
+                                @endforeach
                             </select>
                             @error('servicio_id')
                             <div class="text-danger">{{ $message }}</div>
@@ -94,64 +102,10 @@
 @endsection
 
 @push('css')
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
 @endpush
 
 
 @push('js')
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
-    <script>
-    
-        var path_area_search = "{{ route('actividades.areaSearch') }}";
-    
-        $('#area-search').select2({
-            placeholder: 'Selecciona un area',
-            ajax: {
-                url: path_area_search,
-                dataType: 'json',
-                delay: 250,
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                text: item.nombre,
-                                id: item.id
-                            }
-                        })
-                    };
-                },
-                cache: true
-            }
-        });
-    
-        var path_servicio_search = "{{ route('actividades.servicioSearch') }}";
-    
-        $('#servicio-search').select2({
-            placeholder: 'Selecciona un servicio',
-            ajax: {
-                url: path_servicio_search,
-                dataType: 'json',
-                delay: 250,
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                text: item.nombre,
-                                id: item.id
-                            }
-                        })
-                    };
-                },
-                cache: true
-            }
-        });
-    
-    </script>
 @endpush

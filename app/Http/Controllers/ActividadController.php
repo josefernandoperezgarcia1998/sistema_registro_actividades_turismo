@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ActividadesExport;
+use App\Models\Area;
+use App\Models\Servicio;
 use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables as FacadesDataTables;
 
@@ -311,6 +313,36 @@ class ActividadController extends Controller
     public function exportExcel()
     {
         return Excel::download(new ActividadesExport, 'actividades.xlsx');
+    }
+
+    // Función asincrona para enviar información a la vista de las areas
+    public function areaSearch(Request $request)
+    {
+        $data = Area::where('estado','Si')->get();
+
+        if($request->filled('q')){
+            $data = Area::select("nombre", "id")
+                        ->where('estado','Si')
+                        ->where('nombre', 'LIKE', '%'. $request->get('q'). '%')
+                        ->get();
+        }
+    
+        return response()->json($data);
+    }
+
+    // Función asincrona para enviar información a la vista de los servicios
+    public function servicioSearch(Request $request)
+    {
+        $data = Servicio::where('estado','Si')->get();
+
+        if($request->filled('q')){
+            $data = Servicio::select("nombre", "id")
+                        ->where('estado','Si')
+                        ->where('nombre', 'LIKE', '%'. $request->get('q'). '%')
+                        ->get();
+        }
+    
+        return response()->json($data);
     }
 
 }

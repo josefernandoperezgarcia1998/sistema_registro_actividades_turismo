@@ -67,3 +67,8 @@ Route::get('sesiones', function(){
 
 
 });
+
+
+Route::get('area-search', [ActividadController::class, 'areaSearch'])->name('actividades.areaSearch');
+
+Route::get('servicio-search', [ActividadController::class, 'servicioSearch'])->name('actividades.servicioSearch');
