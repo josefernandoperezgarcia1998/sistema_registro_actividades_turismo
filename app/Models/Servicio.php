@@ -16,10 +16,10 @@ class Servicio extends Model
         'estado',
     ];
 
-    // Un usuario tiene varios servicios
+    // Un servicio tiene varias actividades
     public function actividades()
     {
-        return $this->hasMany('App\Models\Actividad','actividad_id', 'id');
+        return $this->hasMany('App\Models\Actividad');
     }
 
 }

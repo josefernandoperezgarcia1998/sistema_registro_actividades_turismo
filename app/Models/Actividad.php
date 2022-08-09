@@ -37,7 +37,7 @@ class Actividad extends Model
         return $this->belongsTo('App\Models\Area', 'area_id');
     }
 
-    // Una activiad le pertenece a un area
+    // Una activiad le pertenece a un servicio
     public function servicio()
     {
         return $this->belongsTo('App\Models\Servicio', 'servicio_id');

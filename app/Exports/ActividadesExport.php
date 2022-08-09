@@ -11,8 +11,9 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Illuminate\Support\Facades\Session;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
-class ActividadesExport implements FromCollection, WithHeadings, WithMapping, WithEvents, ShouldAutoSize
+class ActividadesExport implements FromCollection, WithHeadings, WithMapping, WithEvents, ShouldAutoSize, WithTitle 
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -86,31 +87,62 @@ class ActividadesExport implements FromCollection, WithHeadings, WithMapping, Wi
         ];
     }
 
-        // Recorrido del arreglo del modelo Buzon
-        public function map($actividad) : array {
-            return [
-                $actividad->folio,
-                $actividad->fecha_inicio,
-                $actividad->quien_reporta,
-                $actividad->area->nombre,
-                $actividad->servicio->nombre,
-                $actividad->descripcion,
-                $actividad->fecha_fin,
-                $actividad->user->name,
-            ] ;
+    // Recorrido del arreglo del modelo Buzon
+    public function map($actividad) : array {
+        return [
+            $actividad->folio,
+            $actividad->fecha_inicio,
+            $actividad->quien_reporta,
+            $actividad->area->nombre,
+            $actividad->servicio->nombre,
+            $actividad->descripcion,
+            $actividad->fecha_fin,
+            $actividad->user->name,
+        ] ;
+    }
+
+    // Estilo para agregarle un color al encabezado
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class    => function(AfterSheet $event) {
+                $event->sheet->getDelegate()->getStyle('A1:H1')
+                        ->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setARGB('9DD5FA');
+            },
+        ];
+    }
+
+    public function title(): string
+    {
+        if(Session::get('mes') == 1){
+            return 'Actividades del mes: Enero '.Session::get('ano');
+        } elseif (Session::get('mes') == 2) {
+            return 'Actividades del mes: Febrero '.Session::get('ano');
+        } elseif (Session::get('mes') == 3) {
+            return 'Actividades del mes: Marzo '.Session::get('ano');
+        } elseif (Session::get('mes') == 4) {
+            return 'Actividades del mes: Abril '.Session::get('ano');
+        } elseif (Session::get('mes') == 5) {
+            return 'Actividades del mes: Mayo '.Session::get('ano');
+        } elseif (Session::get('mes') == 6) {
+            return 'Actividades del mes: Junio '.Session::get('ano');
+        } elseif (Session::get('mes') == 7) {
+            return 'Actividades del mes: Julio '.Session::get('ano');
+        } elseif (Session::get('mes') == 8) {
+            return 'Actividades del mes: Agosto '.Session::get('ano');
+        } elseif (Session::get('mes') == 9) {
+            return 'Actividades del mes: Septiembre '.Session::get('ano');
+        } elseif (Session::get('mes') == 10) {
+            return 'Actividades del mes: Octubre '.Session::get('ano');
+        } elseif (Session::get('mes') == 11) {
+            return 'Actividades del mes: Noviembre '.Session::get('ano');
+        } elseif (Session::get('mes') == 12) {
+            return 'Actividades del mes: Diciembre '.Session::get('ano');
+        } else{
+            return 'no valido';
         }
-    
-        // Estilo para agregarle un color al encabezado
-        public function registerEvents(): array
-        {
-            return [
-                AfterSheet::class    => function(AfterSheet $event) {
-                    $event->sheet->getDelegate()->getStyle('A1:H1')
-                            ->getFill()
-                            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                            ->getStartColor()
-                            ->setARGB('9DD5FA');
-                },
-            ];
-        }
+    }
 }

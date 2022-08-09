@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ActividadesExport;
+use App\Exports\ActividadesporServicioExport;
+use App\Exports\ActividadesporTodosServiciosExport;
 use App\Models\Area;
 use App\Models\Servicio;
 use Illuminate\Support\Facades\Session;
@@ -111,7 +113,7 @@ class ActividadController extends Controller
         $order ='';
         $service['contador'] = $order;
 
-        $service['folio'] =  $service['contador'] .'-'. $letrasNombre .'-'. $mes_actual;
+        $service['folio'] =  $service['contador'] .'-'. $letrasNombre .'-'. $mes_creacion;
 
         if($mes_creacion == $mes_actual){
             $order = 1;
@@ -124,7 +126,7 @@ class ActividadController extends Controller
             }
     
             $service['contador'] = $order;
-            $service['folio'] =  $service['contador'] .'-'. $letrasNombre .'-'. $mes_actual;
+            $service['folio'] =  $service['contador'] .'-'. $letrasNombre .'-'. $mes_creacion;
         } elseif(!($mes_creacion == $mes_actual)) {
             $order = 1;
             $records = Actividad::whereMonth('fecha_inicio', $mes_creacion)->get();
@@ -137,7 +139,7 @@ class ActividadController extends Controller
 
             $service['contador'] = $order;
 
-            $service['folio'] =  $service['contador'] .'-'. $letrasNombre .'-'. $mes_actual;
+            $service['folio'] =  $service['contador'] .'-'. $letrasNombre .'-'. $mes_creacion;
 
         } else {
             return redirect()->back()->with('error', 'No puedes crear un servicio con una fecha que no sea de este mes.')->withInput();
@@ -244,7 +246,7 @@ class ActividadController extends Controller
         }
     }
 
-    // Vista para mostrar la consulta
+    // Vista para mostrar la consulta de registro general ✔ 👍
     public function vistaConsulta()
     {
         if(Auth::user()->rol=="Administrador"){
@@ -263,7 +265,7 @@ class ActividadController extends Controller
         }
     }
 
-    // Función para generar las consultas por mes y año
+    // Función para generar las consultas de registro general por mes y año ✔ 👍
     public function consulta(Request $request)
     {
         if(Auth::user()->rol=="Administrador"){
@@ -309,13 +311,13 @@ class ActividadController extends Controller
         }
     }
 
-    // Función para exportar datos de excel
+    // Función para exportar datos de registro general de excel 👍
     public function exportExcel()
     {
-        return Excel::download(new ActividadesExport, 'actividades.xlsx');
+        return Excel::download(new ActividadesExport, 'actividades-generales.xlsx');
     }
 
-    // Función asincrona para enviar información a la vista de las areas
+    // Función asincrona para enviar información a la vista de las areas (SELECT2)
     public function areaSearch(Request $request)
     {
         $data = Area::where('estado','Si')->get();
@@ -330,7 +332,7 @@ class ActividadController extends Controller
         return response()->json($data);
     }
 
-    // Función asincrona para enviar información a la vista de los servicios
+    // Función asincrona para enviar información a la vista de los servicios (SELECT2)
     public function servicioSearch(Request $request)
     {
         $data = Servicio::where('estado','Si')->get();
@@ -343,6 +345,132 @@ class ActividadController extends Controller
         }
     
         return response()->json($data);
+    }
+
+    // Función para la vista de consultar por todos los servicios👍👍
+    public function vistaConsultaPorServiciosTodo()
+    {
+        $mensaje = '';
+    
+        $actividades = Actividad::with('servicio')
+                                ->orderBy('servicio_id','asc')
+                                ->get();
+    
+    
+        $actividadesCount = Actividad::with('servicio')
+                                    ->orderBy('servicio_id','asc')
+                                    ->count();
+        
+        return view('actividades.consulta-por-servicios', compact('actividades','actividadesCount','mensaje'));
+    }
+    
+    // Función para hacer la consulta por todos los servicios 👍👍
+    public function consultaPorServiciosTodo(Request $request)
+    {
+        $mesSeleccionado = $request->mes;
+        $anoSeleccionado = $request->ano;
+
+        Session::put('mes_seleccionado', $mesSeleccionado);
+        Session::put('ano_seleccionado', $anoSeleccionado);
+
+        $actividades = Actividad::with('servicio')
+                                ->whereMonth('fecha_inicio', $mesSeleccionado)
+                                ->whereYear('fecha_inicio', $anoSeleccionado)
+                                ->orderBy('servicio_id','asc')
+                                ->get();
+                                
+        $actividadesCount = Actividad::with('servicio')
+                                    ->whereMonth('fecha_inicio', $mesSeleccionado)
+                                    ->whereYear('fecha_inicio', $anoSeleccionado)
+                                    ->orderBy('servicio_id','asc')
+                                    ->count();
+                                
+        $mensaje = 'Se encontraron los siguiente resgistros';
+        return view('actividades.consulta-por-servicios', compact('actividades','actividadesCount','mensaje'));
+    }
+    
+    // Función para poder exportar a excel por todos los servicios 👍👍
+    public function exportExcelPorServiciosTodo()
+    {
+        return Excel::download(new ActividadesporTodosServiciosExport, 'actividades-por-todos-servicio.xlsx');
+    }
+
+    // Función para la vista de consultar por todos los servicios 👍👍👍
+    public function vistaConsultaPorServiciosUnicoServicio()
+    {
+        $mensaje = '';
+    
+        $actividades = Actividad::with('servicio')
+                                ->orderBy('servicio_id','asc')
+                                ->get();
+    
+    
+        $actividadesCount = Actividad::with('servicio')
+                                    ->orderBy('servicio_id','asc')
+                                    ->count();
+
+        $servicios = DB::table('servicios')
+                        ->orderBy('nombre','asc')
+                        ->where('estado','Si')
+                        ->get();
+            
+        
+        return view('actividades.consulta-por-servicio-unico', compact('actividades','actividadesCount','mensaje', 'servicios'));
+    }
+    
+    // Función para hacer la consulta por todos los servicios 👍👍👍
+    public function consultaPorServiciosUnicoServicio(Request $request)
+    {
+
+
+
+        $servicioSelect = $request->servicio_id;
+        $mesSelect = $request->mes;
+        $anoSelect = $request->ano;
+
+        Session::put('servicioSeleccionado', $servicioSelect);
+        Session::put('mesServicioSeleccionado', $mesSelect);
+        Session::put('anoServicioSeleccionado', $anoSelect);
+
+        $actividades = Actividad::with('servicio')
+                                ->where('servicio_id', $servicioSelect)
+                                ->whereMonth('fecha_inicio', $mesSelect)
+                                ->whereYear('fecha_inicio', $anoSelect)
+                                ->orderBy('servicio_id','asc')
+                                ->get();
+                                
+        $actividadesCount = Actividad::with('servicio')
+                                    ->where('servicio_id', $servicioSelect)
+                                    ->whereMonth('fecha_inicio', $mesSelect)
+                                    ->whereYear('fecha_inicio', $anoSelect)
+                                    ->orderBy('servicio_id','asc')
+                                    ->count();
+
+        $servicios = DB::table('servicios')
+                        ->orderBy('nombre','asc')
+                        ->where('estado','Si')
+                        ->get();
+        
+        // Obteniendo el nombre del servicio
+        $servicioNombre = DB::table('servicios')
+                            ->where('id', $servicioSelect)
+                            ->select('servicios.nombre')
+                            ->get();
+        
+        // Obteniendo el nombre del servicio
+        $servicioNom = '';
+        foreach($servicioNombre as $servicio){
+            $servicioNom = $servicio->nombre;
+        }
+                                
+        $mensaje = 'Se encontraron los siguiente resgistros del servicio: '. $servicioNom .' con mes: '.$mesSelect.' y año '.$anoSelect;
+        return view('actividades.consulta-por-servicio-unico', compact('actividades','actividadesCount','mensaje', 'servicios'));
+    }
+    
+    // Función para poder exportar a excel por todos los servicios 👍👍👍
+    public function exportExcelPorServiciosUnicoServicio()
+    {
+        return Excel::download(new ActividadesporServicioExport, 'actividades-por-servicio.xlsx');
     }
 
 }

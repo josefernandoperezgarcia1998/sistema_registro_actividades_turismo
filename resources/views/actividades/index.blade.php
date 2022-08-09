@@ -19,7 +19,7 @@
             <div>
                 <a href="{{route('actividades.create')}}" class="btn btn-primary btn-sm">Nuevo servicio</a>
                 {{-- @if (Auth::user()->rol == 'Administrador') --}}
-                    <a href="{{route('actividades.vista-consulta')}}" class="btn btn-primary btn-sm">Consultar</a>
+                @include('actividades.dropdown-consulta.dropdown-consulta')
                 {{-- @endif --}}
             </div>
         </div>
@@ -55,7 +55,7 @@
 
 
 @push('js')
-    {{-- inicio CDN de jquery para datatables --}}
+{{-- inicio CDN de jquery para datatables --}}
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
@@ -67,41 +67,58 @@
 {{-- Fin para responsive de datatables --}}
 
 <script>
-$(document).ready(function () {
-    $('#actividadesTable').DataTable({
-        "serverSide": true,
-        "ajax": "{{ url('actividades-data') }}",
-        "columns": [
-            {data: 'folio', name: 'folio'},
-            {data: 'quien_reporta', name: 'quien_reporta'},
-            {data: 'area', name: 'area.nombre'},
-            {data: 'user', name: 'user.name'},
-            {data: 'fecha_inicio', name: 'fecha_inicio'},
-            {data: 'btn'},
-        ],
-        responsive: true,
-        autoWidth: false,
+    $(document).ready(function () {
+        $('#actividadesTable').DataTable({
+            "serverSide": true,
+            "ajax": "{{ url('actividades-data') }}",
+            "columns": [{
+                    data: 'folio',
+                    name: 'folio'
+                },
+                {
+                    data: 'quien_reporta',
+                    name: 'quien_reporta'
+                },
+                {
+                    data: 'area',
+                    name: 'area.nombre'
+                },
+                {
+                    data: 'user',
+                    name: 'user.name'
+                },
+                {
+                    data: 'fecha_inicio',
+                    name: 'fecha_inicio'
+                },
+                {
+                    data: 'btn'
+                },
+            ],
+            responsive: true,
+            autoWidth: false,
 
-        "language": {
-        "lengthMenu": "Mostrar " +
-            `<select class="custom-select custom-select-sm form-control form-control-sm">
+            "language": {
+                "lengthMenu": "Mostrar " +
+                    `<select class="custom-select custom-select-sm form-control form-control-sm">
                                     <option value='10'>10</option>
                                     <option value='25'>25</option>
                                     <option value='50'>50</option>
                                     <option value='-1'>Todo</option>
                                     </select>` +
-            " registros por página",
-        "zeroRecords": "Sin registros",
-        "info": "Mostrando la página _PAGE_ de _PAGES_",
-        "infoEmpty": "",
-        "infoFiltered": "(filtrado de _MAX_ registros totales)",
-        'search': 'Buscar:',
-        'paginate': {
-            'next': 'Siguiente',
-            'previous': 'Anterior'
-            }
-        },
+                    " registros por página",
+                "zeroRecords": "Sin registros",
+                "info": "Mostrando la página _PAGE_ de _PAGES_",
+                "infoEmpty": "",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                'search': 'Buscar:',
+                'paginate': {
+                    'next': 'Siguiente',
+                    'previous': 'Anterior'
+                }
+            },
+        });
     });
-});
+
 </script>
 @endpush

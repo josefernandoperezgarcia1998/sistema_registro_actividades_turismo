@@ -1,6 +1,6 @@
 @extends('layouts.general')
 
-@section('title_page', 'Consultar general de actividades')
+@section('title_page', 'Consulta de servicio único')
 
 @section('content_page')
 @if (session('success'))
@@ -13,7 +13,7 @@
     <div class="card-header">
         <div class="d-flex justify-content-between">
             <div>
-                Consulta general por mes y año
+                Consulta de servicio único y descripción por mes/año
             </div>
             <div>
                 @include('actividades.dropdown-consulta.dropdown-consulta')
@@ -23,19 +23,31 @@
     <div class="card-body">
         <div class="">
             <div class="accordion-item">
-                <h2 class="accordion-header" id="headingThree">
+                <h2 class="accordion-header" id="headingThree2">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                        Selecciona el mes y año
+                        data-bs-target="#collapseThree2" aria-expanded="false" aria-controls="collapseThree2">
+                        Filtro por mes y año
                     </button>
                 </h2>
-                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                <div id="collapseThree2" class="accordion-collapse collapse" aria-labelledby="headingThree"
                     data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                        <form id="formulario" action="{{ route('actividades.consulta') }}" method="post"
-                            enctype="multipart/form-data" autocomplete="off">
+                        <form id="formulario" action="{{ route('actividades.consulta-por-unico-servicio') }}"
+                            method="post" enctype="multipart/form-data" autocomplete="off">
                             @csrf
                             <div class="row">
+                                <div class="col-sm">
+                                    <label for="area" class="form-label">Servicio</label>
+                                    <select class="form-select" name="servicio_id" value="{{ old('servicio_id') }}" required>
+                                        <option value="" selected>Seleccionar servicio</option>
+                                        @foreach ($servicios as $servicio)
+                                        <option value="{{$servicio->id}}" {{ old('servicio_id') == $servicio->id ? 'selected' : '' }}>{{$servicio->nombre}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('servicio_id')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
                                 <div class="col-sm">
                                     <div class="mb-3">
                                         <label for="mes" class="form-label">Mes</label>
@@ -54,7 +66,7 @@
                                             <option value="11">Noviembre</option>
                                             <option value="12">Diciembre</option>
                                         </select>
-                                        @error('fecha_inicio')
+                                        @error('mes')
                                         <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -63,16 +75,18 @@
                                     <label for="fecha_fin" class="form-label">Año</label>
                                     <input class="form-control" type="number" name="ano" id="ano">
                                     <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" id="anoActual" name="anoActual" checked>
+                                        <input type="checkbox" class="form-check-input" id="anoActual" name="anoActual"
+                                            checked>
                                         <label class="form-check-label" for="anoActual">Año actual</label>
                                     </div>
-                                    @error('fecha_fin')
+                                    @error('ano')
                                     <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary btn-sm" id="btnBuscar">Buscar</button>
-                            <a href="{{route("actividades.excel")}}" class="btn btn-success btn-sm" id="botonExportar">Exportar Excel</a>
+                            <a href="{{route('actividades.consulta-excel-por-unico-servicio')}}"
+                                class="btn btn-success btn-sm" id="botonExportarTodo">Exportar excel</a>
                         </form>
                     </div>
                 </div>
@@ -82,27 +96,24 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">Folio</th>
-                            <th scope="col">Quien reporta</th>
-                            <th scope="col">Area</th>
-                            <th scope="col">Atendió</th>
+                            {{-- <th scope="col">Folio</th> --}}
+                            <th scope="col">Servicio</th>
+                            <th scope="col">Descripción</th>
                             <th scope="col">Fecha</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($actividades as $actividad)
                         <tr>
-                            <td>{{ $actividad->folio }}</td>
-                            <td>{{ $actividad->quien_reporta }}</td>
-                            <td>{{ $actividad->area->nombre }}</td>
-                            <td>{{ $actividad->user->name }}</td>
+                            {{-- <td>{{ $actividad->folio }}</td> --}}
+                            <td>{{ $actividad->servicio->nombre }}</td>
+                            <td>{{ $actividad->descripcion }}</td>
                             <td>{{ $actividad->fecha_inicio }}</td>
                         </tr>
-                        
                         @empty
-                            <tr>
-                                <td>Sin registros</td>
-                            </tr>
+                        <tr>
+                            <td>Sin registros</td>
+                        </tr>
                         @endforelse
                 </table>
                 <p>Total de registros encontrados: <strong>{{ $actividadesCount }}</strong></p>
@@ -118,29 +129,29 @@
 
     @push('js')
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    
-    <script>
 
+    <script>
         // Obteniendo la fecha actual
         var currentTime = new Date();
         var year = currentTime.getFullYear()
 
         //Desactivando el input input
         $('#ano').val(year);
-        $('#ano').prop( "readonly", true);
+        $('#ano').prop("readonly", true);
 
-        $("#anoActual").on( 'change', function() {
-            if( $(this).is(':checked') ) {
+        $("#anoActual").on('change', function () {
+            if ($(this).is(':checked')) {
                 // Hacer algo si el checkbox ha sido seleccionado
                 $('#ano').val(year);
-                $('#ano').prop( "readonly", true);
+                $('#ano').prop("readonly", true);
             } else {
                 // Hacer algo si el checkbox ha sido deseleccionado
                 $('#ano').val('');
-                $('#ano').prop( "readonly", false);
+                $('#ano').prop("readonly", false);
             }
         });
+
     </script>
 
-    
+
     @endpush

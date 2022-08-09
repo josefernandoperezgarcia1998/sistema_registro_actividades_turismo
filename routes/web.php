@@ -64,11 +64,34 @@ Route::get('sesiones', function(){
 
     session()->forget('mes');
     session()->forget('ano');
-
-
+    session()->forget('mes_seleccionado');
+    session()->forget('ano_seleccionado');
+    session()->forget('servicioSeleccionado');
+    session()->forget('mesServicioSeleccionado');
+    session()->forget('anoServicioSeleccionado');
 });
 
-
+// Ruta para ajax - buscar un área con select2 
 Route::get('area-search', [ActividadController::class, 'areaSearch'])->name('actividades.areaSearch');
 
+// Ruta para ajax - buscar un servicio con select2
 Route::get('servicio-search', [ActividadController::class, 'servicioSearch'])->name('actividades.servicioSearch');
+
+// Ruta para la interfaz de la consulta por catalogo de servicios
+Route::get('acividades/consultas-por-servicios-todos', [ActividadController::class, 'vistaConsultaPorServiciosTodo'])->name('actividades.vista-consulta-por-servicios-todos');
+
+// Ruta para generar las consultas
+Route::post('consulta-por-servicios-todos', [ActividadController::class, 'consultaPorServiciosTodo'])->name('actividades.consulta-por-servicios-todos');
+
+// Ruta para exportar el excel con los datos
+Route::get('exportar-excel-por-servicios-todos', [ActividadController::class, 'exportExcelPorServiciosTodo'])->name('actividades.consulta-excel-por-servicios-todos');
+
+
+// Ruta para la interfaz de la consulta por catalogo de servicios
+Route::get('acividades/consultas-por-servicios-unico-servicio', [ActividadController::class, 'vistaConsultaPorServiciosUnicoServicio'])->name('actividades.vista-consulta-por-unico-servicio');
+
+// Ruta para generar las consultas
+Route::post('consulta-por-servicios-unico-servicio', [ActividadController::class, 'consultaPorServiciosUnicoServicio'])->name('actividades.consulta-por-unico-servicio');
+
+// Ruta para exportar el excel con los datos
+Route::get('exportar-excel-por-servicios-unico-servicio', [ActividadController::class, 'exportExcelPorServiciosUnicoServicio'])->name('actividades.consulta-excel-por-unico-servicio');
