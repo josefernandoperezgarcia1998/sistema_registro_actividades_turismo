@@ -28,11 +28,12 @@
         <table class="table" id="actividadesTable">
             <thead>
                 <tr>
-                    <th>Folio</th>
-                    <th>Quien Reporta</th>
+                    <th>Fecha inicio</th>
+                    <th>Quién reporta</th>
                     <th>Área</th>
                     <th>Atendió</th>
-                    <th>Fecha</th>
+                    <th>Servicio</th>
+                    <th>Fecha fin</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -72,25 +73,30 @@
             "serverSide": true,
             "ajax": "{{ url('actividades-data') }}",
             "columns": [{
-                    data: 'folio',
-                    name: 'folio'
+                    data: 'date_1',
+                    name: 'date_1'
+                },{
+                    data: 'empleado',
+                    name: 'empleado.nombre'
                 },
+                
                 {
-                    data: 'quien_reporta',
-                    name: 'quien_reporta'
-                },
-                {
-                    data: 'area',
-                    name: 'area.nombre'
+                    data: 'area_nombre',
+                    name: 'area_nombre'
                 },
                 {
                     data: 'user',
                     name: 'user.name'
                 },
                 {
-                    data: 'fecha_inicio',
-                    name: 'fecha_inicio'
+                    data: 'servicio',
+                    name: 'servicio.nombre'
                 },
+                {
+                    data: 'date_2',
+                    name: 'date_2'
+                },
+                
                 {
                     data: 'btn'
                 },

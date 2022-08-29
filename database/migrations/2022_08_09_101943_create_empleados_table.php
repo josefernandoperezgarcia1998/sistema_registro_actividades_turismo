@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAreasTable extends Migration
+class CreateEmpleadosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,13 @@ class CreateAreasTable extends Migration
      */
     public function up()
     {
-        Schema::create('areas', function (Blueprint $table) {
+        Schema::create('empleados', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre')->nullable();
+            $table->string('nombre');
             $table->enum('estado', ['Si', 'No'])->default('Si');
+            $table->enum('sexo', ['Hombre', 'Mujer']);
+            $table->unsignedBigInteger('area_id');
+            $table->foreign('area_id')->references('id')->on('areas');
             $table->timestamps();
         });
     }
@@ -28,6 +31,6 @@ class CreateAreasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('areas');
+        Schema::dropIfExists('empleados');
     }
 }

@@ -16,9 +16,9 @@ class Area extends Model
         'estado',
     ];
 
-    // Un usuario tiene varios servicios
-    public function actividades()
+    // Una área le pertenece a un empleado
+    public function empleado()
     {
-        return $this->hasMany('App\Models\Actividad','actividad_id', 'id');
+        return $this->hasOne(Empleado::class);
     }
 }

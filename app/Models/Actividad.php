@@ -13,16 +13,17 @@ class Actividad extends Model
 
     protected $fillable = [
         'folio',
-        'fecha_inicio',
-        'quien_reporta',
-        'descripcion',
-        'fecha_fin',
-        'usuario_id',
-        'area_id',
+        // 'quien_reporta',
+        'area_nombre',
         'servicio_id',
+        'usuario_id',
+        'descripcion',
+        'fecha_inicio',
+        'fecha_fin',
         'date_1',
         'date_2',
         'contador',
+        'empleado_id',
     ];
 
     // Una activiad le pertenece a un usuario
@@ -31,16 +32,15 @@ class Actividad extends Model
         return $this->belongsTo('App\Models\User', 'usuario_id');
     }
 
-    // Una activiad le pertenece a un area
-    public function area()
-    {
-        return $this->belongsTo('App\Models\Area', 'area_id');
-    }
-
     // Una activiad le pertenece a un servicio
     public function servicio()
     {
         return $this->belongsTo('App\Models\Servicio', 'servicio_id');
+    }
+
+    public function empleado()
+    {
+        return $this->belongsTo('App\Models\Empleado', 'empleado_id');
     }
 
 }

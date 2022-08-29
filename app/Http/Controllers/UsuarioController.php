@@ -183,4 +183,31 @@ class UsuarioController extends Controller
                 ->rawColumns(['btn'])
                 ->toJson();
     }
+
+    public function changePassword()
+    {
+        $usuario = Auth::user();
+        return view('configuracion.datos-cuenta', compact('usuario'));
+    }
+
+    public function updatePassword(Request $request)
+    {
+        # Validation
+        $request->validate([
+            'old_password' => 'required',
+            'new_password' => 'required|confirmed',
+        ]);
+
+        #Match The Old Password
+        if(!Hash::check($request->old_password, auth()->user()->password)){
+            return back()->with("error", "La contraseña antigua no es correcta");
+        }
+
+        #Update the new Password
+        User::whereId(auth()->user()->id)->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return back()->with("status", "Contraseña actualizada con éxito");
+    }
 }

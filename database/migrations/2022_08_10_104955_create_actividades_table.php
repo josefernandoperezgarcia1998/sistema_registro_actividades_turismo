@@ -16,8 +16,9 @@ class CreateActividadesTable extends Migration
         Schema::create('actividades', function (Blueprint $table) {
             $table->increments('id');
             $table->string('folio')->nullable();
+            // $table->string('quien_reporta')->nullable();
+            $table->string('area_nombre')->nullable();
             $table->string('fecha_inicio')->nullable();
-            $table->string('quien_reporta')->nullable();
             $table->string('descripcion');
             $table->string('date_1')->nullable();
             $table->string('date_2')->nullable();
@@ -25,10 +26,10 @@ class CreateActividadesTable extends Migration
             $table->string('fecha_fin')->nullable();
             $table->unsignedBigInteger('usuario_id');
             $table->foreign('usuario_id')->references('id')->on('users');
-            $table->unsignedBigInteger('area_id');
-            $table->foreign('area_id')->references('id')->on('areas');
             $table->unsignedBigInteger('servicio_id');
             $table->foreign('servicio_id')->references('id')->on('servicios');
+            $table->unsignedBigInteger('empleado_id');
+            $table->foreign('empleado_id')->references('id')->on('empleados');
             $table->timestamps();
         });
     }

@@ -80,6 +80,22 @@
 
                     </div>
                 </div>
+                <form action="{{route('empleados.import.excel')}}" method="post" enctype="multipart/form-data">
+                @csrf
+                @if (Session::has('message'))
+                    <p>{{Session::get('message')}}</p>
+                @endif
+                    <input type="file" name="file" id="file">
+                    <button class="btn btn-primary btn-sm">Importar empleados</button>
+                </form>
+                <form action="{{route('areas.import.excel')}}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    @if (Session::has('message'))
+                        <p>{{Session::get('message')}}</p>
+                    @endif
+                        <input type="file" name="file" id="file">
+                        <button class="btn btn-primary btn-sm">Importar areas</button>
+                    </form>
 
                 {{--    <div class="flex justify-center mt-4 sm:items-center sm:justify-between">
                     <div class="text-center text-sm text-gray-500 sm:text-left">

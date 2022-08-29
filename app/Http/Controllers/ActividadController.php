@@ -31,6 +31,11 @@ class ActividadController extends Controller
                     ->where('estado','Si')
                     ->orderBy('name','asc')
                     ->get();
+        
+        $empleados = DB::table('empleados')
+                    ->where('estado','Si')
+                    ->orderBy('nombre','asc')
+                    ->get();
 
         $areas = DB::table('areas')
                     ->where('estado','Si')
@@ -41,7 +46,7 @@ class ActividadController extends Controller
                         ->orderBy('nombre','asc')
                         ->get();
 
-        return view('actividades.create', compact('users','areas', 'servicios'));
+        return view('actividades.create', compact('users','areas', 'servicios', 'empleados'));
     }
 
     // Función para crear un servicio
@@ -50,11 +55,11 @@ class ActividadController extends Controller
         $service = $request->all();
 
         $validated = $request->validate([
-            'quien_reporta' => 'required',
-            'area_id'       => 'required',
-            'servicio_id'   => 'required',
-            'descripcion'   => 'required',
-            'fecha_inicio'  => 'required',
+            'empleado_id'     => 'required',
+            'area_nombre'       => 'required',
+            'servicio_id'       => 'required',
+            'descripcion'       => 'required',
+            'fecha_inicio'      => 'required',
         ]);
 
         $date_start = Carbon::parse($service['fecha_inicio']);
@@ -177,8 +182,8 @@ class ActividadController extends Controller
         $service_data = request()->except('_token','_method');
 
         $validated = $request->validate([
-            'quien_reporta' => 'required',
-            'area_id'       => 'required',
+            'empleado_id' => 'required',
+            'area_nombre'       => 'required',
             'servicio_id'   => 'required',
             'descripcion'   => 'required',
             'fecha_inicio'  => 'required',
@@ -217,16 +222,19 @@ class ActividadController extends Controller
     public function actividadesDatatables()
     {
 
-        $dataActividad = Actividad::with('area','user')->orderBy('created_at','asc');
-        $dataActividadPrestador = Actividad::with('area','user')->where('usuario_id', Auth::user()->id);
+        $dataActividad = Actividad::with('empleado','servicio','user')->orderBy('fecha_inicio','desc');
+        $dataActividadPrestador = Actividad::with('empleado','servicio','user')->where('usuario_id', Auth::user()->id)->orderBy('fecha_inicio','desc');
 
         if(Auth::user()->rol=="Administrador"){
             return FacadesDataTables::eloquent($dataActividad)
-                                    ->addColumn('area', function (Actividad $actividad) {
-                                        return $actividad->area->nombre;
+                                    ->addColumn('empleado', function (Actividad $actividad) {
+                                        return $actividad->empleado->nombre;
                                     })
                                     ->addColumn('user', function (Actividad $actividad) {
                                         return $actividad->user->name;
+                                    })
+                                    ->addColumn('servicio', function (Actividad $actividad) {
+                                        return $actividad->servicio->nombre;
                                     })
                                     ->addColumn('btn', 'actividades.actions')
                                     ->rawColumns(['btn'])
@@ -234,11 +242,14 @@ class ActividadController extends Controller
         }
         elseif (Auth::user()->rol=="Prestador"){
             return FacadesDataTables::eloquent($dataActividadPrestador)
-                                    ->addColumn('area', function (Actividad $actividad) {
-                                        return $actividad->area->nombre;
+                                    ->addColumn('empleado', function (Actividad $actividad) {
+                                        return $actividad->empleado->nombre;
                                     })
                                     ->addColumn('user', function (Actividad $actividad) {
                                         return $actividad->user->name;
+                                    })
+                                    ->addColumn('servicio', function (Actividad $actividad) {
+                                        return $actividad->servicio->nombre;
                                     })
                                     ->addColumn('btn', 'actividades.actions')
                                     ->rawColumns(['btn'])

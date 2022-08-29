@@ -3,9 +3,11 @@
 use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\AutenticarController;
+use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\UsuarioController;
+use App\Models\Empleado;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -51,6 +53,11 @@ Route::resource('catalogo-servicios', ServicioController::class)->names('catalog
 // Ruta con ajax para obtener toda la data de usuarios con datatables
 Route::get('catalogo-servicios-data', [ServicioController::class, 'catServiciosDatatables'])->name('catalogo-servicios-data');
 
+// Ruta recurso para crud empleados
+Route::resource('empleados', EmpleadoController::class)->names('empleados')->middleware('admin');
+// Ruta con ajax para obtener toda la data de usuarios con datatables
+Route::get('empleados-data', [EmpleadoController::class, 'empleadosDatatables'])->name('empleados-data');
+
 // Ruta para la interfaz de la consulta
 Route::get('acividades/consultas', [ActividadController::class, 'vistaConsulta'])->name('actividades.vista-consulta');
 
@@ -74,6 +81,9 @@ Route::get('sesiones', function(){
 // Ruta para ajax - buscar un área con select2 
 Route::get('area-search', [ActividadController::class, 'areaSearch'])->name('actividades.areaSearch');
 
+// Ruta para ajax - buscar un empleado con select2 
+Route::get('empleado-search', [EmpleadoController::class, 'empleadoSearch'])->name('empleados.empleadoSearch');
+
 // Ruta para ajax - buscar un servicio con select2
 Route::get('servicio-search', [ActividadController::class, 'servicioSearch'])->name('actividades.servicioSearch');
 
@@ -95,3 +105,16 @@ Route::post('consulta-por-servicios-unico-servicio', [ActividadController::class
 
 // Ruta para exportar el excel con los datos
 Route::get('exportar-excel-por-servicios-unico-servicio', [ActividadController::class, 'exportExcelPorServiciosUnicoServicio'])->name('actividades.consulta-excel-por-unico-servicio');
+
+Route::post('import-list-excel', [EmpleadoController::class, 'importExcel'])->name('empleados.import.excel');
+Route::post('import-lista-excel', [EmpleadoController::class, 'importExcelA'])->name('areas.import.excel');
+
+// Ruta para ajax - obtener el area de un empleado con select2 e imprima en un input 
+Route::post('empleado-area-search', [EmpleadoController::class, 'empleadoAreaSearch'])->name('empleados.empleadoAreaSearch');
+
+//Ruta para la vista de cambiar contraseña
+Route::get('/change-password', [UsuarioController::class, 'changePassword'])->name('change-password');
+
+// Ruta para restablecer la contraseña
+Route::post('/change-password', [UsuarioController::class, 'updatePassword'])->name('update-password');
+

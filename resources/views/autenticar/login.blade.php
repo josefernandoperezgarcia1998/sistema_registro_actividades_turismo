@@ -206,6 +206,18 @@
   <body class="text-center">
     
 <main class="form-signin w-100 m-auto">
+  @if (session('success'))
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <strong>{{ session('success') }}</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  @endif
+  @if (session('error'))
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <strong>{{ session('error') }}</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  @endif
   <form action="{{ route('validar') }}" enctype="multipart/form-data" method="POST">
     @csrf
     <img class="mb-4" src="{{asset('assets/img/logo_sectur.png')}}" alt="logo-sectur" width="140" height="63">

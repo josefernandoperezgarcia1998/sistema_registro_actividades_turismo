@@ -93,8 +93,8 @@
                         @forelse ($actividades as $actividad)
                         <tr>
                             <td>{{ $actividad->folio }}</td>
-                            <td>{{ $actividad->quien_reporta }}</td>
-                            <td>{{ $actividad->area->nombre }}</td>
+                            <td>{{ $actividad->empleado->nombre }}</td>
+                            <td>{{ $actividad->area_nombre }}</td>
                             <td>{{ $actividad->user->name }}</td>
                             <td>{{ $actividad->fecha_inicio }}</td>
                         </tr>

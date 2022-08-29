@@ -38,7 +38,7 @@ class ActividadesExport implements FromCollection, WithHeadings, WithMapping, Wi
 
                 return Actividad::whereMonth('fecha_inicio', $mes)
                                 ->whereYear('fecha_inicio', $ano)
-                                ->with('area','user')
+                                ->with('empleado','user')
                                 ->get();
 
             }
@@ -61,7 +61,7 @@ class ActividadesExport implements FromCollection, WithHeadings, WithMapping, Wi
 
                 return Actividad::whereMonth('fecha_inicio', $mes)
                                 ->whereYear('fecha_inicio', $ano)
-                                ->with('area','user')
+                                ->with('empleado','user')
                                 ->where('usuario_id',Auth::user()->id)
                                 ->get();
 
@@ -84,6 +84,7 @@ class ActividadesExport implements FromCollection, WithHeadings, WithMapping, Wi
             'DESCRIPCIÓN DEL SERVICIO / OBSERVACIONES',
             'FECHA FINALIZACIÓN',
             'REALIZADO POR',
+            'SEXO',
         ];
     }
 
@@ -92,12 +93,13 @@ class ActividadesExport implements FromCollection, WithHeadings, WithMapping, Wi
         return [
             $actividad->folio,
             $actividad->fecha_inicio,
-            $actividad->quien_reporta,
-            $actividad->area->nombre,
+            $actividad->empleado->nombre,
+            $actividad->area_nombre,
             $actividad->servicio->nombre,
             $actividad->descripcion,
             $actividad->fecha_fin,
             $actividad->user->name,
+            $actividad->empleado->sexo,
         ] ;
     }
 
@@ -106,7 +108,7 @@ class ActividadesExport implements FromCollection, WithHeadings, WithMapping, Wi
     {
         return [
             AfterSheet::class    => function(AfterSheet $event) {
-                $event->sheet->getDelegate()->getStyle('A1:H1')
+                $event->sheet->getDelegate()->getStyle('A1:I1')
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
@@ -142,7 +144,7 @@ class ActividadesExport implements FromCollection, WithHeadings, WithMapping, Wi
         } elseif (Session::get('mes') == 12) {
             return 'Actividades del mes: Diciembre '.Session::get('ano');
         } else{
-            return 'no valido';
+            return 'Mes';
         }
     }
 }
