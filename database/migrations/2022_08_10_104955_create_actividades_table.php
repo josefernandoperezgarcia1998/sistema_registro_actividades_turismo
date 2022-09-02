@@ -19,7 +19,7 @@ class CreateActividadesTable extends Migration
             // $table->string('quien_reporta')->nullable();
             $table->string('area_nombre')->nullable();
             $table->string('fecha_inicio')->nullable();
-            $table->string('descripcion');
+            $table->longText('descripcion');
             $table->string('date_1')->nullable();
             $table->string('date_2')->nullable();
             $table->string('contador');

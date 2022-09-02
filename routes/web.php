@@ -7,7 +7,10 @@ use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\UsuarioController;
+use App\Models\Actividad;
 use App\Models\Empleado;
+use App\Models\Servicio;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -118,3 +121,10 @@ Route::get('/change-password', [UsuarioController::class, 'changePassword'])->na
 // Ruta para restablecer la contraseña
 Route::post('/change-password', [UsuarioController::class, 'updatePassword'])->name('update-password');
 
+// Ruta AJAX para graficar por todos los servicios del modelo Servicio
+Route::post('/graficar-servicios-todos', [HomeController::class, 'graficaGeneraldeServicios'])->name('servicios-todos');
+
+// Ruta AJAX para graficar por mes las actividades por servicio 
+Route::post('/graficar-servicios-mes', [HomeController::class, 'graficaPorMes'])->name('servicios-grafica-mes');
+
+Route::post('graficar-servicios-usuarios', [HomeController::class, 'graficarServiciosUsuarios'])->name('graficar-servicios-usuarios');

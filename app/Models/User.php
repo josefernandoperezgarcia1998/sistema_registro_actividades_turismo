@@ -47,7 +47,7 @@ class User extends Authenticatable
     // Un usuario tiene varios servicios
     public function actividades()
     {
-        return $this->hasMany('App\Models\Actividad','actividad_id', 'id');
+        return $this->hasMany('App\Models\Actividad', 'usuario_id');
     }
 
 }

@@ -222,8 +222,8 @@ class ActividadController extends Controller
     public function actividadesDatatables()
     {
 
-        $dataActividad = Actividad::with('empleado','servicio','user')->orderBy('fecha_inicio','desc');
-        $dataActividadPrestador = Actividad::with('empleado','servicio','user')->where('usuario_id', Auth::user()->id)->orderBy('fecha_inicio','desc');
+        $dataActividad = Actividad::with('empleado','servicio','user')->orderBy('fecha_inicio','desc')->orderBy('folio','desc');
+        $dataActividadPrestador = Actividad::with('empleado','servicio','user')->where('usuario_id', Auth::user()->id)->orderBy('fecha_inicio','desc')->orderBy('folio','desc');
 
         if(Auth::user()->rol=="Administrador"){
             return FacadesDataTables::eloquent($dataActividad)
