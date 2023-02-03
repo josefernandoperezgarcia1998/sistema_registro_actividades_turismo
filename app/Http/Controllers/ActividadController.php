@@ -262,17 +262,34 @@ class ActividadController extends Controller
     {
         if(Auth::user()->rol=="Administrador"){
             $mensaje = '';
-            $actividades = Actividad::all();
-            $actividadesCount = Actividad::count();
+            $exportar = false;
+            $color = null;
+            $actividades = Actividad::orderBy('servicio_id','asc')
+                                    ->whereYear('fecha_inicio', date("Y"))
+                                    ->whereMonth('fecha_inicio', date('m'))
+                                    ->get();
+
+            $actividadesCount = Actividad::orderBy('servicio_id','asc')
+                                        ->whereYear('fecha_inicio', date("Y"))
+                                        ->whereMonth('fecha_inicio', date('m'))
+                                        ->count();
             
-            return view('actividades.consulta', compact('actividades','actividadesCount','mensaje'));
+            return view('actividades.consulta', compact('actividades','actividadesCount','mensaje', 'exportar','color'));
         }
         elseif (Auth::user()->rol=="Prestador"){
             $mensaje = '';
-            $actividades = Actividad::where('usuario_id', Auth::user()->id)->get();
-            $actividadesCount = Actividad::where('usuario_id', Auth::user()->id)->count();
+            $exportar = false;
+            $actividades = Actividad::where('usuario_id', Auth::user()->id)
+                                    ->whereYear('fecha_inicio', date("Y"))
+                                    ->whereMonth('fecha_inicio', date('m'))
+                                    ->get();
+
+            $actividadesCount = Actividad::where('usuario_id', Auth::user()->id)
+                                            ->whereYear('fecha_inicio', date("Y"))
+                                            ->whereMonth('fecha_inicio', date('m'))
+                                            ->count();
             
-            return view('actividades.consulta', compact('actividades','actividadesCount','mensaje'));
+            return view('actividades.consulta', compact('actividades','actividadesCount','mensaje', 'exportar'));
         }
     }
 
@@ -283,6 +300,20 @@ class ActividadController extends Controller
             // Obteniendo mes y año del request
             $mes = $request->mes;
             $ano = $request->ano;
+
+            // Generando color al azar
+            $colors = array(
+                            "alert alert-primary"   => "alert alert-primary", 
+                            "alert alert-secondary" => "alert alert-secondary", 
+                            "alert alert-success"   => "alert alert-success", 
+                            "alert alert-info"      => "alert alert-info",
+                            "alert alert-warning"   => "alert alert-warning",
+                        );
+
+            shuffle($colors);
+            $color = $colors[0];
+
+            $exportar = true;
 
             $actividades = Actividad::whereMonth('fecha_inicio', $mes)
                                     ->whereYear('fecha_inicio', $ano)
@@ -297,11 +328,13 @@ class ActividadController extends Controller
             Session::put('ano', $ano);
 
             $mensaje = 'Búsqueda encontrada por mes: '.$mes.' y año: '.$ano;
-            return view('actividades.consulta', compact('actividades','actividadesCount','mensaje'));
+            return view('actividades.consulta', compact('actividades','actividadesCount','mensaje', 'exportar', 'color'));
         } elseif (Auth::user()->rol=="Prestador"){
             // Obteniendo mes y año del request
             $mes = $request->mes;
             $ano = $request->ano;
+
+            $exportar = true;
 
             $actividades = Actividad::whereMonth('fecha_inicio', $mes)
                                     ->whereYear('fecha_inicio', $ano)
@@ -318,7 +351,7 @@ class ActividadController extends Controller
             Session::put('ano', $ano);
 
             $mensaje = 'Búsqueda encontrada por mes: '.$mes.' y año: '.$ano;
-            return view('actividades.consulta', compact('actividades','actividadesCount','mensaje'));
+            return view('actividades.consulta', compact('actividades','actividadesCount','mensaje', 'exportar'));
         }
     }
 
@@ -362,17 +395,20 @@ class ActividadController extends Controller
     public function vistaConsultaPorServiciosTodo()
     {
         $mensaje = '';
+        $exportar = false;
     
         $actividades = Actividad::with('servicio')
                                 ->orderBy('servicio_id','asc')
+                                ->whereMonth('fecha_inicio', date('m'))
                                 ->get();
     
     
         $actividadesCount = Actividad::with('servicio')
                                     ->orderBy('servicio_id','asc')
+                                    ->whereMonth('fecha_inicio', date('m'))
                                     ->count();
         
-        return view('actividades.consulta-por-servicios', compact('actividades','actividadesCount','mensaje'));
+        return view('actividades.consulta-por-servicios', compact('actividades','actividadesCount','mensaje', 'exportar'));
     }
     
     // Función para hacer la consulta por todos los servicios 👍👍
@@ -380,6 +416,7 @@ class ActividadController extends Controller
     {
         $mesSeleccionado = $request->mes;
         $anoSeleccionado = $request->ano;
+        $exportar = true;
 
         Session::put('mes_seleccionado', $mesSeleccionado);
         Session::put('ano_seleccionado', $anoSeleccionado);
@@ -397,7 +434,7 @@ class ActividadController extends Controller
                                     ->count();
                                 
         $mensaje = 'Se encontraron los siguiente resgistros';
-        return view('actividades.consulta-por-servicios', compact('actividades','actividadesCount','mensaje'));
+        return view('actividades.consulta-por-servicios', compact('actividades','actividadesCount','mensaje','exportar'));
     }
     
     // Función para poder exportar a excel por todos los servicios 👍👍
@@ -410,14 +447,19 @@ class ActividadController extends Controller
     public function vistaConsultaPorServiciosUnicoServicio()
     {
         $mensaje = '';
+        $exportar = false;
     
         $actividades = Actividad::with('servicio')
                                 ->orderBy('servicio_id','asc')
+                                ->whereYear('fecha_inicio', date("Y"))
+                                ->whereMonth('fecha_inicio', date('m'))
                                 ->get();
     
     
         $actividadesCount = Actividad::with('servicio')
                                     ->orderBy('servicio_id','asc')
+                                    ->whereYear('fecha_inicio', date("Y"))
+                                    ->whereMonth('fecha_inicio', date('m'))
                                     ->count();
 
         $servicios = DB::table('servicios')
@@ -426,14 +468,14 @@ class ActividadController extends Controller
                         ->get();
             
         
-        return view('actividades.consulta-por-servicio-unico', compact('actividades','actividadesCount','mensaje', 'servicios'));
+        return view('actividades.consulta-por-servicio-unico', compact('actividades','actividadesCount','mensaje', 'servicios', 'exportar'));
     }
     
     // Función para hacer la consulta por todos los servicios 👍👍👍
     public function consultaPorServiciosUnicoServicio(Request $request)
     {
 
-
+        $exportar = true;
 
         $servicioSelect = $request->servicio_id;
         $mesSelect = $request->mes;
@@ -475,7 +517,7 @@ class ActividadController extends Controller
         }
                                 
         $mensaje = 'Se encontraron los siguiente resgistros del servicio: '. $servicioNom .' con mes: '.$mesSelect.' y año '.$anoSelect;
-        return view('actividades.consulta-por-servicio-unico', compact('actividades','actividadesCount','mensaje', 'servicios'));
+        return view('actividades.consulta-por-servicio-unico', compact('actividades','actividadesCount','mensaje', 'servicios', 'exportar'));
     }
     
     // Función para poder exportar a excel por todos los servicios 👍👍👍

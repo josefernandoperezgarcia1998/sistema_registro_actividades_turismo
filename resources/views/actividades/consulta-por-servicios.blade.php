@@ -23,14 +23,12 @@
     <div class="card-body">
         <div class="">
             <div class="accordion-item">
-                <h2 class="accordion-header" id="headingThree2">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseThree2" aria-expanded="false" aria-controls="collapseThree2">
-                        Filtro por mes y año
+                <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                        Selecciona el mes y año
                     </button>
                 </h2>
-                <div id="collapseThree2" class="accordion-collapse collapse" aria-labelledby="headingThree"
-                    data-bs-parent="#accordionExample">
+                <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
                     <div class="accordion-body">
                         <form id="formulario" action="{{ route('actividades.consulta-por-servicios-todos') }}"
                             method="post" enctype="multipart/form-data" autocomplete="off">
@@ -73,8 +71,11 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary btn-sm" id="btnBuscar">Buscar</button>
-                            <a href="{{route('actividades.consulta-excel-por-servicios-todos')}}"
-                                class="btn btn-success btn-sm" id="botonExportarTodo">Exportar excel</a>
+                            @if ($exportar == false)
+                                
+                            @else
+                                <a href="{{route("actividades.consulta-excel-por-servicios-todos")}}" class="btn btn-success btn-sm" id="botonExportarTodo">Exportar excel</a>
+                            @endif
                         </form>
                     </div>
                 </div>

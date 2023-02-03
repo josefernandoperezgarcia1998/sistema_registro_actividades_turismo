@@ -9,9 +9,12 @@ use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\UsuarioController;
 use App\Models\Actividad;
 use App\Models\Empleado;
+use Illuminate\Http\Request;
 use App\Models\Servicio;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
+use Psy\Command\WhereamiCommand;
 
 /*
 |--------------------------------------------------------------------------
@@ -128,3 +131,88 @@ Route::post('/graficar-servicios-todos', [HomeController::class, 'graficaGeneral
 Route::post('/graficar-servicios-mes', [HomeController::class, 'graficaPorMes'])->name('servicios-grafica-mes');
 
 Route::post('graficar-servicios-usuarios', [HomeController::class, 'graficarServiciosUsuarios'])->name('graficar-servicios-usuarios');
+
+// Route::post('prueba', function(){
+//     $actividades = Actividad::all();
+//     return response()->json($actividades);
+// })->name('prueba');
+
+Route::post('prueba-mes', [HomeController::class, 'buscarPorMes'])->name('prueba-mes');
+
+Route::get('prueba', function(){
+
+    // $servicios = Actividad::where('servicio_id', 1)
+    //     ->whereMonth('fecha_inicio', 9)
+    //     ->whereYear('fecha_inicio',  2022)
+    //     ->with('empleado:id,nombre,sexo')
+    //     ->get();
+
+    // $servicios = DB::table('actividades')
+    //                 ->where('servicio_id', 1)
+    //                 ->whereMonth('fecha_inicio', 9)
+    //                 ->whereYear('fecha_inicio',  2022)
+    //                 ->where('sexo', '=', 'Hombre')
+    //                 ->get();
+
+    // Este query builder si funciona para obtener cuantas actividades tiene registradas un empleado
+    // $servicios = DB::table('empleados')
+    //         ->join('actividades', 'empleados.id', '=', 'actividades.empleado_id')
+    //         ->select('empleados.nombre as empleadoNombre')
+    //         ->where('empleado_id','=', 25)
+    //         ->get();
+
+    // $servicios = DB::table('servicios')
+    //         ->join('actividades', 'servicios.id', '=', 'actividades.servicio_id')
+    //         ->select('servicios.nombre as servicioNombre')
+    //         ->where('servicio_id','=', 2)
+    //         ->count();
+
+
+    // Esto ya saca el conteo para obtener hombres y mujeres de una actividad es especifico pero de forma estatica
+        // $mujer  =   DB::table('empleados')
+        //                 ->join('actividades', 'empleados.id', '=', 'actividades.empleado_id')
+        //                 ->where('actividades.servicio_id', 3)
+        //                 ->whereMonth('actividades.fecha_inicio',9)
+        //                 ->where('empleados.sexo','Mujer')
+        //                 ->select('empleados.id as empleadoId','empleados.nombre as empleadoNombre','empleados.sexo as empleadoSexo','actividades.*'/* , 'contacts.phone', 'orders.price' */)
+        //                 ->get();
+
+        // $hombre  =   DB::table('empleados')
+        //                 ->join('actividades', 'empleados.id', '=', 'actividades.empleado_id')
+        //                 ->where('actividades.servicio_id', 3)
+        //                 ->whereMonth('actividades.fecha_inicio',9)
+        //                 ->where('empleados.sexo','Hombre')
+        //                 ->select('empleados.id as empleadoId','empleados.nombre as empleadoNombre','empleados.sexo as empleadoSexo','actividades.*'/* , 'contacts.phone', 'orders.price' */)
+        //                 ->get();
+
+
+        // $servicios = Servicio::where('estado', 'Si')->get();
+        // // dd($servicios);
+
+        // $arregloServiciosMujer = [];
+        // foreach ($servicios as $key => $servicio) {
+        //     $mujer = DB::table('empleados')
+        //                     ->join('actividades', 'empleados.id', '=', 'actividades.empleado_id')
+        //                     ->where('actividades.servicio_id', $servicio->id)
+        //                     ->whereMonth('actividades.fecha_inicio',9)
+        //                     ->where('empleados.sexo','Mujer')
+        //                     ->select('empleados.id as empleadoId','empleados.nombre as empleadoNombre','empleados.sexo as empleadoSexo','actividades.*')
+        //                     ->get();
+
+        //     $arregloServiciosMujer[] = $mujer;
+        // }
+
+        // $startDate = '2022-01-01';
+        // $endDate = '2022-09-01';
+
+        // $mujer = DB::table('empleados')
+        //                     ->join('actividades', 'empleados.id', '=', 'actividades.empleado_id')
+        //                     ->where('actividades.servicio_id', 4)
+        //                     ->whereMonth('actividades.fecha_inicio',date('m'))
+        //                     ->whereBetween('fecha_inicio', [$startDate,$endDate])
+        //                     ->where('empleados.sexo','Mujer')
+        //                     ->select('empleados.id as empleadoId','empleados.nombre as empleadoNombre','empleados.sexo as empleadoSexo','actividades.*')
+        //                     ->get();
+        // dd($mujer);
+
+});

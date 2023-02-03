@@ -133,6 +133,34 @@
                                     class="card-link btn btn-primary btn-sm pull-right">Ver más...</a>
                             </div>
                         </div>
+                        &nbsp;&nbsp;
+                        &nbsp;
+                        <div class="card shadow p-3 mb-5 bg-body rounded" style="width: 40rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">Conteo de hombres y mujeres por servicio de "<strong
+                                        class="text-uppercase">{{$mes_actual}}</strong>"</h5>
+                                <table class="table" style="">
+                                    <tr>
+                                        <th class="table-active text-center">Servicios</th>
+                                        @foreach ($servicios as $servicio)
+                                        <td class="bg-light text-center">{{$servicio->nombre}}</td>
+                                        @endforeach
+                                    </tr>
+                                    <tr>
+                                        <th class="table-active text-center">Mujer</th>
+                                        @foreach ($arregloServiciosMujer as $servicio)
+                                        <td class="bg-light text-center">{{$servicio}}</td>
+                                        @endforeach
+                                    </tr>
+                                    <tr>
+                                        <th class="table-active text-center">Hombre</th>
+                                        @foreach ($arregloServiciosHombre as $servicio)
+                                        <td class="bg-light text-center">{{$servicio}}</td>
+                                        @endforeach
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
                         <br><br>
                         <div class="row">
                             {{-- Gráfica de barras para servicios en general--}}
@@ -170,6 +198,35 @@
                             </div>
                         </div>
                         @endif
+                        <div class="row">
+                            <h5 class="card-title">Gráfica de servicios por mes</h5>
+                            <div class="card shadow p-3 mb-5 bg-body rounded">
+                                <div class="card-body" id="grafico-contenedor">
+                                    <div class="lead">Filtro</div>
+                                    <div class="d-flex">
+                                        <select class="form-select w-25" name="mes" id="mes">
+                                            <option value="0">Selecionar mes</option>
+                                            <option value="1">Enero</option>
+                                            <option value="2">Febrero</option>
+                                            <option value="3">Marzo</option>
+                                            <option value="4">Abril</option>
+                                            <option value="5">Mayo</option>
+                                            <option value="6">Junio</option>
+                                            <option value="7">Julio</option>
+                                            <option value="8">Agosto</option>
+                                            <option value="9">Septiembre</option>
+                                            <option value="10">Octubre</option>
+                                            <option value="11">Noviembre</option>
+                                            <option value="12">Diciembre</option>
+                                        </select>
+                                        <input class="form-control w-50" type="date" name="f_inicio" id="f_inicio">
+                                        <input class="form-control w-50" type="date" name="f_fin" id="f_fin">
+                                    </div>
+                                    <br>
+                                    <canvas id="myChartServiciosPorMesSelect"></canvas>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -194,6 +251,7 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     {{-- Script para la gráfica --}}
     <script>
         // Inicia gráfica de datos para representar la cantidad de Servicios de manera general
@@ -353,7 +411,7 @@
             }
         }).done(function (res) {
             let arregloUsuarios = JSON.parse(res);
-            console.log(arregloUsuarios);
+            // console.log(arregloUsuarios);
 
             for (let x = 0; x < arregloUsuarios.length; x++) {
                 nombreUsuarios.push(arregloUsuarios[x].name);
@@ -403,6 +461,138 @@
             });
         }
         // Fin gráfica por usuarios y sus actividades
+
+
+
+        // Gráfica por filtro
+        let mes;
+        let servicioMesSelect = [];
+        let cantidadMesSelect = [];
+        let soloStringsSelect, soloNumerosSelect;
+
+        // Seleect que obtiene el mes con el select y manda a llamar ajax para generar la gráfica
+        // $('#mes').change(function (e) {
+        //     e.preventDefault();
+        //     mes = $(this).val();
+        //     console.log(mes);
+        //     generarGraficaPorMesajax();
+        // });
+
+        let inicio;
+        let fin;
+
+        let f_inicio = document.getElementById('f_inicio');
+        f_inicio.valueAsDate = new Date();
+        
+        let f_fin = document.getElementById('f_fin');
+        f_fin.valueAsDate = new Date();
+
+        f_inicio.onchange = function(){
+            // console.log('La fecha de inicio es: ',this.value);
+            inicio = $(this).val();
+        }
+        
+        f_fin.onchange = function(){
+            // console.log('La fecha de fin es: ',this.value);
+            fin = $(this).val();
+            console.log(inicio,' - ', fin);
+            mes = '';
+            generarGraficaPorMesajax();
+        }
+
+        // Función con ajax para procesar la data que viene del back con ajax y generar la gráfica
+        function generarGraficaPorMesajax() {
+            $.ajax({
+                url: "{{route('prueba-mes')}}",
+                method: 'post',
+                data: {
+                    // id: 1,
+                    // mes: mes,
+                    inicio: inicio,
+                    fin: fin,
+                    _token: _token,
+                }
+            }).done(function (res) {
+                let arregloMesSelect = JSON.parse(res);
+                console.log(arregloMesSelect);
+                // console.log(arregloMesSelect);
+                // Del json que se obtiene se filtran los resultados en variables separadas, tanto por strings como por numeros
+                soloStringsSelect = arregloMesSelect.filter(e => typeof e === 'string' && e)
+                soloNumerosSelect = arregloMesSelect.filter(e => typeof e === 'number' && e)
+
+                // En el arregloMes se llena con los strings filtrados
+                for (let x = 0; x < soloStringsSelect.length; x++) {
+                    servicioMesSelect.push(soloStringsSelect[x]);
+                }
+
+                // En el cantidadMes se llena con los numeros filtrados
+                for (let x = 0; x < soloNumerosSelect.length; x++) {
+                    cantidadMesSelect.push(soloNumerosSelect[x].length);
+                }
+
+                // Una vez cargados los datos se manda a llamar la función de la gráfica.
+                generarGraficaMesSelect();
+            });
+        }
+
+        // Función para generar gráfica con ajax por mse con select
+        function generarGraficaMesSelect() {
+            let myChart;
+            // const ctx = document.getElementById('myChartServiciosPorMesSelect');
+            // Se manda a llamar la función para resetear la gráfica de chart.js
+            resetCanvas();
+            const ctx = document.getElementById('myChartServiciosPorMesSelect').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: soloStringsSelect,
+                    datasets: [{
+                        label: 'Servicios',
+                        data: soloNumerosSelect,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Variable que almacena una función que hace el reset de la gráfica
+        let resetCanvas = function () {
+            $('#myChartServiciosPorMesSelect').remove(); // this is my <canvas> element
+            $('#grafico-contenedor').append(
+                '<canvas id="myChartServiciosPorMesSelect" class="shadow p-3 mb-5 bg-body rounded"><canvas>');
+            canvas = document.querySelector('#myChartServiciosPorMesSelect');
+            ctx = canvas.getContext('2d');
+            ctx.canvas.width = $('#grafico-contenedor').width(); // resize to parent width
+            ctx.canvas.height = $('#grafico-contenedor').height(); // resize to parent height
+            var x = canvas.width / 2;
+            var y = canvas.height / 2;
+            ctx.font = '10pt Verdana';
+            ctx.textAlign = 'center';
+            ctx.fillText('This text is centered on the canvas', x, y);
+        };
 
     </script>
 

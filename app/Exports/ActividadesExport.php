@@ -33,8 +33,8 @@ class ActividadesExport implements FromCollection, WithHeadings, WithMapping, Wi
             {
 
                 // Eliminando las variables de sesion mes y ano
-                session()->forget('mes');
-                session()->forget('ano');
+                // session()->forget('mes');
+                // session()->forget('ano');
 
                 return Actividad::whereMonth('fecha_inicio', $mes)
                                 ->whereYear('fecha_inicio', $ano)
@@ -56,8 +56,8 @@ class ActividadesExport implements FromCollection, WithHeadings, WithMapping, Wi
             {
 
                 // Eliminando las variables de sesion mes y ano
-                session()->forget('mes');
-                session()->forget('ano');
+                // session()->forget('mes');
+                // session()->forget('ano');
 
                 return Actividad::whereMonth('fecha_inicio', $mes)
                                 ->whereYear('fecha_inicio', $ano)

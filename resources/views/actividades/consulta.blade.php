@@ -1,11 +1,17 @@
 @extends('layouts.general')
 
-@section('title_page', 'Consultar general de actividades')
+@section('title_page', 'Consulta general de actividades')
 
 @section('content_page')
 @if (session('success'))
 <div class="alert alert-success alert-dismissible fade show" role="alert">
     <strong>{{ session('success') }}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+@if (!is_null($color))
+<div class="{{$color}} alert-dismissible fade show" role="alert">
+    <strong>{{ $mensaje }}</strong>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 @endif
@@ -23,14 +29,12 @@
     <div class="card-body">
         <div class="">
             <div class="accordion-item">
-                <h2 class="accordion-header" id="headingThree">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
                         Selecciona el mes y año
                     </button>
                 </h2>
-                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
-                    data-bs-parent="#accordionExample">
+                <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
                     <div class="accordion-body">
                         <form id="formulario" action="{{ route('actividades.consulta') }}" method="post"
                             enctype="multipart/form-data" autocomplete="off">
@@ -72,7 +76,12 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary btn-sm" id="btnBuscar">Buscar</button>
-                            <a href="{{route("actividades.excel")}}" class="btn btn-success btn-sm" id="botonExportar">Exportar Excel</a>
+
+                            @if ($exportar == false)
+                                
+                            @else
+                                <a href="{{route("actividades.excel")}}" class="btn btn-success btn-sm" id="botonExportar">Exportar Excel</a>
+                            @endif
                         </form>
                     </div>
                 </div>

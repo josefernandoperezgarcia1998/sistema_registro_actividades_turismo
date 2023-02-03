@@ -30,9 +30,9 @@ class ActividadesporServicioExport implements FromCollection, WithHeadings, With
         if(isset($servicioSeleccionado) && isset($mesServicioSeleccionado) && isset($anoServicioSeleccionado))
         {
             // Eliminando las variables de sesion mes y ano
-            session()->forget('servicioSeleccionado');
-            session()->forget('mesServicioSeleccionado');
-            session()->forget('anoServicioSeleccionado');
+            // session()->forget('servicioSeleccionado');
+            // session()->forget('mesServicioSeleccionado');
+            // session()->forget('anoServicioSeleccionado');
 
             return Actividad::where('servicio_id', $servicioSeleccionado)
                             ->whereMonth('fecha_inicio', $mesServicioSeleccionado)
