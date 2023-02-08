@@ -71,7 +71,7 @@
                     <div class="col-sm">
                         <div class="mb-3">
                             <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
-                            <input class="form-control" type="date" name="fecha_inicio" id="fecha_inicio" value="{{ old('fecha_inicio', $actividad->fecha_inicio) }}">
+                            <input class="form-control" type="datetime-local" name="fecha_inicio" id="fecha_inicio" value="{{ old('fecha_inicio', $actividad->fecha_inicio) }}">
                             @error('fecha_inicio')
                             <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -79,7 +79,7 @@
                     </div>
                     <div class="col-sm">
                         <label for="fecha_fin" class="form-label">Fecha de fin</label>
-                        <input class="form-control" type="date" name="fecha_fin" id="fecha_fin" value="{{ old('fecha_fin', $actividad->fecha_fin) }}">
+                        <input class="form-control" type="datetime-local" name="fecha_fin" id="fecha_fin" value="{{ old('fecha_fin', $actividad->fecha_fin) }}">
                         @error('fecha_fin')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
